@@ -7,7 +7,7 @@ import { users } from '@/db/schema'; // Assuming your users schema and enums are
 import { eq } from 'drizzle-orm';
 
 // Ensure your webhook secret is set in environment variables
-const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
+const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SIGNING_SECRET;
 
 if (!WEBHOOK_SECRET) {
     throw new Error('Please add CLERK_WEBHOOK_SECRET from Clerk Dashboard to .env or .env.local');
