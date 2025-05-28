@@ -1,11 +1,24 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 
-const isPublicRoute = createRouteMatcher(['/sign-in(.*)', '/sign-up(.*)', '/api/webhooks(.*)'])
-
+const isPublicRoute = createRouteMatcher([
+    '/sign-in(.*)',      // Matches /sign-in and /sign-in/*
+    '/sign-up(.*)',      // Matches /sign-up and /sign-up/*
+    '/api/webhooks(.*)'  // Matches /api/webhooks and /api/webhooks/*
+]);
 export default clerkMiddleware(async (auth, req) => {
-    if (!isPublicRoute(req)) {
-        await auth.protect()
+    const { pathname } = req.nextUrl;
+    const isReqPublic = isPublicRoute(req);
+
+    console.log(`[Middleware] Path: ${pathname}, isPublicRoute evaluated: ${isReqPublic}`);
+
+    if (!isReqPublic) {
+        console.log(`[Middleware] Protecting route: ${pathname}`);
+        await auth.protect(); // auth().protect() typically handles the response/redirect itself.
+    } else {
+        console.log(`[Middleware] Route is public, not protecting: ${pathname}`);
     }
+    // If the route is public, the middleware implicitly allows the request to proceed
+    // to the route handler without further action here.
 })
 
 export const config = {
@@ -15,4 +28,4 @@ export const config = {
         // Always run for API routes
         '/(api|trpc)(.*)',
     ],
-}
+};
